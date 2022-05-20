@@ -1,10 +1,13 @@
 package talib
 
-import "github.com/shopspring/decimal"
+import (
+	"github.com/gowsp/talib/internal"
+	"github.com/shopspring/decimal"
+)
 
 // Sma function returns the moving average
 func Sma(indicator Indicator, length uint64) Indicator {
-	id := SMA.Id(length)
+	id := internal.SMA.Id(length)
 	return indicator.LoadOrStore(id, func() Indicator {
 		window := decimal.NewFromInt(int64(length))
 		cache := NewCachedIndicator(indicator)
@@ -28,7 +31,7 @@ func Sma(indicator Indicator, length uint64) Indicator {
 // Ema The ema function returns the exponentially weighted moving average.
 // In ema weighting factors decrease exponentially
 func Ema(indicator Indicator, length uint64) Indicator {
-	id := EMA.Id(length)
+	id := internal.EMA.Id(length)
 	return indicator.LoadOrStore(id, func() Indicator {
 		alpha := TWO.Div(decimal.NewFromInt(int64(length)).Add(ONE))
 		return BaseEma(indicator, length, alpha)
@@ -37,7 +40,7 @@ func Ema(indicator Indicator, length uint64) Indicator {
 
 // Rma Moving average used in RSI. It is the exponentially weighted moving average with alpha = 1 / length.
 func Rma(indicator Indicator, length uint64) Indicator {
-	id := RMA.Id(length)
+	id := internal.RMA.Id(length)
 	return indicator.LoadOrStore(id, func() Indicator {
 		alpha := ONE.Div(decimal.NewFromInt(int64(length)))
 		return BaseEma(indicator, length, alpha)

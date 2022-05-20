@@ -1,10 +1,13 @@
 package talib
 
-import "github.com/shopspring/decimal"
+import (
+	"github.com/gowsp/talib/internal"
+	"github.com/shopspring/decimal"
+)
 
 // Roc roc (rate of change) showing the difference between current value of x and the value of x that was y days ago.
 func Roc(i Indicator, length uint64) Indicator {
-	id := ROC.Id(length)
+	id := internal.ROC.Id(length)
 	return i.LoadOrStore(id, func() Indicator {
 		roc := NewCachedIndicator(i)
 		roc.calculate = func(offset uint64) decimal.Decimal {

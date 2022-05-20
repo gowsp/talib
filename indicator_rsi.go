@@ -1,10 +1,13 @@
 package talib
 
-import "github.com/shopspring/decimal"
+import (
+	"github.com/gowsp/talib/internal"
+	"github.com/shopspring/decimal"
+)
 
 // Rsi Relative strength index. It is calculated based on rma's of upward and downward change of x.
 func Rsi(i Indicator, length uint64) Indicator {
-	id := RSI.Id(length)
+	id := internal.RSI.Id(length)
 	return i.LoadOrStore(id, func() Indicator {
 		gain := Rma(Gain(i), length)
 		loss := Rma(Loss(i), length)

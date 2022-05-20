@@ -105,7 +105,7 @@ func (series *TimeSeries) Cursor(i uint64) uint64 {
 	return series.latest - series.period*i
 }
 
-func (series *TimeSeries) NewIndicator(enum IndicatorEnum, method func(Bar) decimal.Decimal) Indicator {
+func (series *TimeSeries) NewIndicator(enum string, method func(Bar) decimal.Decimal) Indicator {
 	id := string(enum)
 	return series.LoadOrStore(id, func() Indicator {
 		indicator := NewCacheFrom(series)

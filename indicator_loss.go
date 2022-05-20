@@ -1,10 +1,13 @@
 package talib
 
-import "github.com/shopspring/decimal"
+import (
+	"github.com/gowsp/talib/internal"
+	"github.com/shopspring/decimal"
+)
 
 // Loss
 func Loss(i Indicator) Indicator {
-	return i.LoadOrStore(string(LOSS), func() Indicator {
+	return i.LoadOrStore(string(internal.LOSS), func() Indicator {
 		loss := NewCachedIndicator(i)
 		loss.calculate = func(offset uint64) decimal.Decimal {
 			if loss.OutOfBounds(offset) {
