@@ -21,6 +21,10 @@ const (
 	LOSS = "loss"
 )
 const (
+	LOWEST  IndicatorEnum = "lowest"
+	HIGHEST IndicatorEnum = "highest"
+)
+const (
 	SMA IndicatorEnum = "sma"
 	RMA IndicatorEnum = "rma"
 	EMA IndicatorEnum = "ema"
