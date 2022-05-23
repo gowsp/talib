@@ -72,3 +72,14 @@ func (candle *BaseBar) Amount() decimal.Decimal {
 func (candle *BaseBar) Trades() decimal.Decimal {
 	return candle.TradesVal
 }
+
+func NewBar(period time.Duration, begin time.Time, open, high, low, close decimal.Decimal) Bar {
+	return &BaseBar{
+		PeriodVal:     period,
+		BeginTimeVal:  begin,
+		OpenPriceVal:  open,
+		HighPriceVal:  high,
+		LowPriceVal:   low,
+		ClosePriceVal: close,
+	}
+}
