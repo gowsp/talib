@@ -8,9 +8,8 @@ import (
 // Gain
 func Gain(i Indicator) Indicator {
 	return i.LoadOrStore(internal.GAIN, func() Indicator {
-		gain := NewCachedIndicator(i)
-		gain.calculate = func(offset uint64) decimal.Decimal {
-			if gain.OutOfBounds(offset) {
+		gain := NewCachedIndicator(i, func(i Indicator, offset uint64) decimal.Decimal {
+			if i.OutOfBounds(offset) {
 				return decimal.Zero
 			}
 			cur := i.Offset(offset)
@@ -19,7 +18,7 @@ func Gain(i Indicator) Indicator {
 				return cur.Sub(pre)
 			}
 			return decimal.Zero
-		}
+		})
 		return gain
 	})
 }

@@ -9,9 +9,8 @@ import (
 func Highest(i Indicator, length uint64) Indicator {
 	id := internal.HIGHEST.Id(length)
 	return i.LoadOrStore(id, func() Indicator {
-		highest := NewCachedIndicator(i)
-		highest.calculate = func(offset uint64) decimal.Decimal {
-			end := highest.BarSeries().Size()
+		highest := NewCachedIndicator(i, func(v Indicator, offset uint64) decimal.Decimal {
+			end := v.BarSeries().Size()
 			if offset+length < end {
 				end = offset + length
 			}
@@ -23,7 +22,7 @@ func Highest(i Indicator, length uint64) Indicator {
 				}
 			}
 			return val
-		}
+		})
 		return highest
 	})
 }

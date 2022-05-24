@@ -105,20 +105,18 @@ func (series *TimeSeries) Cursor(i uint64) uint64 {
 	return series.latest - series.period*i
 }
 
-func (series *TimeSeries) NewIndicator(enum string, method func(Bar) decimal.Decimal) Indicator {
-	id := string(enum)
+func (series *TimeSeries) NewIndicator(id string, method func(Bar) decimal.Decimal) Indicator {
 	return series.LoadOrStore(id, func() Indicator {
-		indicator := NewCacheFrom(series)
-		indicator.calculate = func(offset uint64) decimal.Decimal {
-			if indicator.OutOfBounds(offset) {
+		indicator := NewCacheFrom(series, func(i Indicator, offset uint64) decimal.Decimal {
+			if i.OutOfBounds(offset) {
 				return decimal.Zero
 			}
-			bar := indicator.BarSeries().Offset(offset)
+			bar := i.BarSeries().Offset(offset)
 			if bar == nil {
 				return decimal.Zero
 			}
 			return method(bar)
-		}
+		})
 		return indicator
 	})
 }

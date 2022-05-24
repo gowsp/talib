@@ -24,12 +24,11 @@ func (series *TimeSeries) MedianPriceIndicator() Indicator {
 	low := series.LowPriceIndicator()
 	high := series.HighPriceIndicator()
 	return series.LoadOrStore(internal.MEDIAN, func() Indicator {
-		median := NewCacheFrom(series)
-		median.calculate = func(offset uint64) decimal.Decimal {
+		median := NewCacheFrom(series, func(i Indicator, offset uint64) decimal.Decimal {
 			lowPrice := low.Offset(offset)
 			highPrice := high.Offset(offset)
 			return highPrice.Add(lowPrice).Div(TWO)
-		}
+		})
 		return median
 	})
 }
@@ -39,10 +38,9 @@ func (series *TimeSeries) TypicalPriceIndicator() Indicator {
 	high := series.HighPriceIndicator()
 	close := series.ClosePriceIndicator()
 	return series.LoadOrStore(internal.TYPICAL, func() Indicator {
-		typical := NewCacheFrom(series)
-		typical.calculate = func(offset uint64) decimal.Decimal {
+		typical := NewCacheFrom(series, func(i Indicator, offset uint64) decimal.Decimal {
 			return decimal.Sum(high.Offset(offset), low.Offset(offset), close.Offset(offset)).Div(num)
-		}
+		})
 		return typical
 	})
 }

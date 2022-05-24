@@ -10,9 +10,8 @@ func Sma(indicator Indicator, length uint64) Indicator {
 	id := internal.SMA.Id(length)
 	return indicator.LoadOrStore(id, func() Indicator {
 		window := decimal.NewFromInt(int64(length))
-		cache := NewCachedIndicator(indicator)
-		cache.calculate = func(offset uint64) decimal.Decimal {
-			if cache.OutOfBounds(offset + length) {
+		cache := NewCachedIndicator(indicator, func(i Indicator, offset uint64) decimal.Decimal {
+			if i.OutOfBounds(offset + length) {
 				size := indicator.BarSeries().Size()
 				slice := make([]decimal.Decimal, size-offset)
 				for i := offset; i < size; i++ {
@@ -22,8 +21,8 @@ func Sma(indicator Indicator, length uint64) Indicator {
 			}
 			current := indicator.Offset(offset).Div(window)
 			before := indicator.Offset(offset + length).Div(window)
-			return cache.Offset(offset + 1).Sub(before).Add(current)
-		}
+			return i.Offset(offset + 1).Sub(before).Add(current)
+		})
 		return cache
 	})
 }
@@ -47,14 +46,13 @@ func Rma(indicator Indicator, length uint64) Indicator {
 	})
 }
 func BaseEma(indicator Indicator, length uint64, alpha decimal.Decimal) Indicator {
-	ema := NewCachedIndicator(indicator)
-	ema.calculate = func(offset uint64) decimal.Decimal {
-		if ema.OutOfBounds(offset) {
+	ema := NewCachedIndicator(indicator, func(i Indicator, offset uint64) decimal.Decimal {
+		if i.OutOfBounds(offset) {
 			return indicator.Offset(offset)
 		}
-		prevValue := ema.Offset(offset + 1)
+		prevValue := i.Offset(offset + 1)
 		return indicator.Offset(offset).Sub(prevValue).Mul(alpha).Add(prevValue)
-	}
+	})
 	return ema
 
 }

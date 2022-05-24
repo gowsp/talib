@@ -8,9 +8,8 @@ import (
 // Loss
 func Loss(i Indicator) Indicator {
 	return i.LoadOrStore(string(internal.LOSS), func() Indicator {
-		loss := NewCachedIndicator(i)
-		loss.calculate = func(offset uint64) decimal.Decimal {
-			if loss.OutOfBounds(offset) {
+		loss := NewCachedIndicator(i, func(i Indicator, offset uint64) decimal.Decimal {
+			if i.OutOfBounds(offset) {
 				return decimal.Zero
 			}
 			cur := i.Offset(offset)
@@ -19,7 +18,7 @@ func Loss(i Indicator) Indicator {
 				return pre.Sub(cur)
 			}
 			return decimal.Zero
-		}
+		})
 		return loss
 	})
 }

@@ -10,21 +10,25 @@ var ONE = decimal.NewFromInt(1)
 var TWO = decimal.NewFromInt(2)
 var HUNDRED = decimal.NewFromInt(100)
 
+type Loader func(Indicator, uint64) decimal.Decimal
+
 type CachedIndicator struct {
 	series     *TimeSeries
 	indicators sync.Map
 	results    sync.Map
-	calculate  func(offset uint64) decimal.Decimal
+	loader     Loader
 }
 
-func NewCacheFrom(series *TimeSeries) *CachedIndicator {
+func NewCacheFrom(series *TimeSeries, loader Loader) *CachedIndicator {
 	return &CachedIndicator{
 		series: series,
+		loader: loader,
 	}
 }
-func NewCachedIndicator(indicator Indicator) *CachedIndicator {
+func NewCachedIndicator(indicator Indicator, loader Loader) *CachedIndicator {
 	return &CachedIndicator{
 		series: indicator.BarSeries(),
+		loader: loader,
 	}
 }
 
@@ -44,13 +48,13 @@ func (s *CachedIndicator) BarSeries() *TimeSeries {
 }
 func (i *CachedIndicator) Offset(offset uint64) decimal.Decimal {
 	if offset == 0 || i.OutOfBounds(offset) {
-		return i.calculate(offset)
+		return i.loader(i, offset)
 	}
 	cursor := i.series.Cursor(offset)
 	if res, ok := i.results.Load(cursor); ok {
 		return res.(decimal.Decimal)
 	}
-	res := i.calculate(offset)
+	res := i.loader(i, offset)
 	i.results.Store(cursor, res)
 	return res
 }

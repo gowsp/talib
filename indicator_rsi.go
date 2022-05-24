@@ -11,8 +11,7 @@ func Rsi(i Indicator, length uint64) Indicator {
 	return i.LoadOrStore(id, func() Indicator {
 		gain := Rma(Gain(i), length)
 		loss := Rma(Loss(i), length)
-		rsi := NewCachedIndicator(i)
-		rsi.calculate = func(offset uint64) decimal.Decimal {
+		rsi := NewCachedIndicator(i, func(i Indicator, offset uint64) decimal.Decimal {
 			averageGain := gain.Offset(offset)
 			averageLoss := loss.Offset(offset)
 			if averageLoss.IsZero() {
@@ -24,7 +23,7 @@ func Rsi(i Indicator, length uint64) Indicator {
 			}
 			rs := averageGain.Div(averageLoss)
 			return HUNDRED.Sub(HUNDRED.Div(ONE.Add(rs)))
-		}
+		})
 		return rsi
 	})
 }

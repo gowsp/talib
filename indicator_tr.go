@@ -11,9 +11,8 @@ func (series *TimeSeries) Tr() Indicator {
 	high := series.HighPriceIndicator()
 	close := series.ClosePriceIndicator()
 	return series.LoadOrStore(internal.TR, func() Indicator {
-		trIndicator := NewCacheFrom(series)
-		trIndicator.calculate = func(offset uint64) decimal.Decimal {
-			if trIndicator.OutOfBounds(offset + 1) {
+		trIndicator := NewCacheFrom(series, func(i Indicator, offset uint64) decimal.Decimal {
+			if i.OutOfBounds(offset + 1) {
 				return decimal.Zero
 			}
 			lowPrice := low.Offset(offset)
@@ -23,7 +22,7 @@ func (series *TimeSeries) Tr() Indicator {
 				highPrice.Sub(lowPrice),
 				highPrice.Sub(beforeClosePrice).Abs(),
 				lowPrice.Sub(beforeClosePrice).Abs())
-		}
+		})
 		return trIndicator
 	})
 }

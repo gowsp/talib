@@ -9,9 +9,8 @@ import (
 func Lowest(i Indicator, length uint64) Indicator {
 	id := internal.LOWEST.Id(length)
 	return i.LoadOrStore(id, func() Indicator {
-		lowest := NewCachedIndicator(i)
-		lowest.calculate = func(offset uint64) decimal.Decimal {
-			end := lowest.BarSeries().Size()
+		lowest := NewCachedIndicator(i, func(v Indicator, offset uint64) decimal.Decimal {
+			end := v.BarSeries().Size()
 			if offset+length < end {
 				end = offset + length
 			}
@@ -23,7 +22,7 @@ func Lowest(i Indicator, length uint64) Indicator {
 				}
 			}
 			return val
-		}
+		})
 		return lowest
 	})
 }
