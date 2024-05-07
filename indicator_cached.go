@@ -6,9 +6,11 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-var ONE = decimal.NewFromInt(1)
-var TWO = decimal.NewFromInt(2)
-var HUNDRED = decimal.NewFromInt(100)
+var (
+	ONE     = decimal.NewFromInt(1)
+	TWO     = decimal.NewFromInt(2)
+	HUNDRED = decimal.NewFromInt(100)
+)
 
 type Loader func(Indicator, uint64) decimal.Decimal
 

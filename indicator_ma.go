@@ -9,7 +9,7 @@ import (
 func Sma(indicator Indicator, length uint64) Indicator {
 	id := internal.SMA.Id(length)
 	return indicator.LoadOrStore(id, func() Indicator {
-		window := decimal.NewFromInt(int64(length))
+		window := decimal.NewFromUint64(length)
 		cache := NewCachedIndicator(indicator, func(i Indicator, offset uint64) decimal.Decimal {
 			if i.OutOfBounds(offset + length) {
 				size := indicator.BarSeries().Size()
@@ -32,7 +32,7 @@ func Sma(indicator Indicator, length uint64) Indicator {
 func Ema(indicator Indicator, length uint64) Indicator {
 	id := internal.EMA.Id(length)
 	return indicator.LoadOrStore(id, func() Indicator {
-		alpha := TWO.Div(decimal.NewFromInt(int64(length)).Add(ONE))
+		alpha := TWO.Div(decimal.NewFromUint64(length).Add(ONE))
 		return BaseEma(indicator, length, alpha)
 	})
 }
@@ -41,7 +41,7 @@ func Ema(indicator Indicator, length uint64) Indicator {
 func Rma(indicator Indicator, length uint64) Indicator {
 	id := internal.RMA.Id(length)
 	return indicator.LoadOrStore(id, func() Indicator {
-		alpha := ONE.Div(decimal.NewFromInt(int64(length)))
+		alpha := ONE.Div(decimal.NewFromUint64(length))
 		return BaseEma(indicator, length, alpha)
 	})
 }
